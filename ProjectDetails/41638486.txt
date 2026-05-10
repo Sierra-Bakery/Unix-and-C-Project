@@ -1,0 +1,93 @@
+Before starting the assignment, please ensure you are familiar with the basic C programming content. Please practice the workshop questions to learn the concepts.
+
+You will need the content up to Lecture 6 (struct and Linkedlist). You can already start the assignment with the knowledge up to File IO (Lecture 5). You can add the Linked List features later on.
+
+
+
+This advice serves as a rough guide on how to approach the assignment. You do not need to follow all steps exactly as long as your program works. Remember that your program need to work under C89 format with proper makefile and following the coding standards as specified on the assignment specification.
+
+    NOTE 1 : While you are working with your assignment, please update your makefile accordingly. For example, you will start with only one .c file and the main function. When there are more functions and more .c and .h files, update your makefile to ensure the compilation still works with correct file dependency.
+
+    NOTE 2 : Do a lot of testing. Everytime you add/fix a simple feature, compile and test it. Do not move on to the next feature until you fix the bugs. This will make it much easier to write a working program.
+
+
+
+Overall, these are the main steps:
+
+FILE IO
+    (1) Write a program that accept command line arguments. It should be able to accept the map file name as the argument.
+    (2) Attempt to open the file for reading purposes. If it fails, then produce appropriate error message, and end the program. Please DO NOT use exit() function. Please DO NOT use multiple returns in a single function for early exit.
+    (3) If it can be opened, then your program should read all the information from the map file and prepare the 2D map array accordingly. You can assume the content of the file is valid without any issue. fscanf() function will be very useful here.
+
+        NOTE: If for some reason you want to know the amount of the Walls beforehand, then you can read the file twice. On the first read, you only traverse all the integers quickly and keep track how many walls you see. Afterwards, you close the file and re-open it for second reading and create the 2D map. (Alternatively, you can use rewind() function to reset the cursor back to the beginning of the map file)
+
+    (4) You have the freedom to use your creativity on how to store this information. For example, you can immediately store the map information as 2D char array (e.g 'P', 'T', 'G', etc). OR you can store them as 2D int array for now, and interpret them later on when coding for the gameplay. Any approach is fine as long as it works (with reasonable game speed performance).
+    (5) Once finished, close the file.
+    (6) If successful, you have completed FILE IO stage.
+
+GAME INTERFACE
+    (1) Once we have all the map information, we can now start writing the code for the game interface.
+    (2) Write the code to print the whole map on the screen with appropriate characters and borders (along with the instructions what characters can be pressed). You will need nested FOR loop to read the array and print it out.
+    (3) Then, add more codes to clear the terminal screen everytime before printing the map. (Watch the general supplementary video on this)
+    (4) If successful, you have completed basic GAME INTERFACE. (but no gameplay yet)
+
+BACKGROUND and FOREGROUND COLOR
+    (1) Please watch the general supplementary video about adding background and foreground color.
+    (2) The code segment has been provided. What we need to do is to add background color on specific objects when we are printing the map:
+        (a) "blue" foreground for Player.
+        (b) "red" foreground for Enemy. (When furious state, change to red background)
+        (c) "white" background for Wall.
+		(d) "green" background for Goal
+		(e) "yellow" background for Treasure
+    (3) Do not forget to "reset" the background/foreground color each time.
+    (4) If successful, your map should have the correct background/foreground color.
+
+PLAYER MOVEMENT
+    (1) Now, we will start adding the game interaction gradually.
+    (2) First, add code segment to prompt the user for a single char (let's say after the map is displayed on the terminal). The program should be able to read the char without the need for the user to press "Enter" key. (Watch the general supplementary video on this topic)
+    (3) We will use this char to move the player. If the key is valid (i.e 'w', 's', 'a', OR 'd'), then your program should update the location of the player ('P') in the 2D map array, clear the screen, and reprint it.
+    (4) We can put this in a While loop so you can move the player again and again to explore the map. Keep in mind that this is still an incomplete game, so we do not have the condition to stop the loop for now. So, you can press CTRL+C to terminate the program.
+    (5) For simplicity, try to make the Player to move without restriction at first. So, the Player can go through everything (except the map border).
+    (6) Once the Player movement works, then add restrictions so that the Player cannot walk into Wall.
+    (7) If successful, you have completed basic PLAYER MOVEMENT. (basically the game lasts forever with the Player wandering the map with no escape forever... until we terminate the game with CTRL+C)
+
+
+PLAYER INTERACTION WITH TREASURE and GOAL
+    (1) The Player cannot reach the Goal before obtaining the Treasure (Goal behaves like a Wall). So, you need to add a simple check if the Treasure has been looted.
+	(2) When the Player reaches the Treasure, the 'T' character should disappear and the program remembers that.
+	(3) Reaching the Goal at this state should end the program with congratulatory message. Remember to free all the memories you allocated from malloc(). Please do NOT use exit() function.
+	(4) If successful, you have completed winning condition.
+
+
+
+PLAYER INTERACTION WITH ENEMY
+    (1) At the moment, the Enemy is still not moving.
+	(2) You can add a quick losing condition by checking if both Player and Enemy are at the same location. If yes, end the program (and free() all memories correctly).
+	(3) You can test this by deliberately moving the Player towards the Enemy.
+	(4) If successful, you have completed losing condition. Please test this further once you completed Enemy movement.
+
+
+ENEMY MOVEMENT ALGORITHM
+    (1) This algorithm is the last step for the base game.
+	(2) Please read the assignment description for more details on how the Enemy moves.
+	(3) You will need an algorithm to check the surrounding blocks whether they are blocked or not.
+	(4) Please make sure you have practiced using Random Number Generator from the general supplementary video. This is needed when the Enemy need to choose from multiple paths.
+	(5) You also need to write a function that rotate the Enemy orientation when needed.
+	(6) The moment your program detects the Treasure looting, the Enemy will enter furious state immediately. Its background colour will change into red colour. This allows the Enemy to move three times in a row for every Player movement for the rest of the game.
+	(7) If successful, then you have completed the base game.
+
+UNDO FEATURE WITH LINKEDLIST
+    (1) This is the last feature you can add after completing the base game from all the previous steps.
+    (2) We will implement the UNDO feature. This allows us to keep track of all the movements of the Player, Enemy, and the Treasure looting state, and then UNDO the steps anytime we want.
+    (3) The UNDO is triggered by pressing char 'u'. If there is nothing to UNDO, then pressing 'u' will do nothing.
+    (4) You will need to implement a working linkedlist for this feature. Please refer to lecture 6 for the concept. If you want to get full mark for UNDO feature, you need to implement generic linkedlist (and UNDO feature fully working)
+
+        NOTE : The following algorithm is one way to implement UNDO feature. You can use alternative approach as long as it works. (But you still need to use linkedlist)
+
+    (5) The main idea is to use linkedlist to store the game states for every Player movement. Everytime the Player makes a valid movement (e.g not hitting the Wall), then the program will save the current game state in the linkedlist. We can use insertFirst() function to store them.
+    (6) When the Player presses the 'u' key, then we use removeFirst() to retrieve the most recent game state to UNDO the game to the previous state. If the linkedlist is empty (e.g Game just started), then pressing 'u' will do nothing.
+    (7) The main question here is : "What exactly is a game state to be stored?" . This is up to your creativity. For example, you can create a struct that store a copy of Player's position, Treasure state (i.e has been looted OR not), Enemy location and orientation, etc...
+    (8) Large memory usage is not a problem for this assignment as long as you free them properly.
+    (9) If your implementation is successful, then your program should be able to UNDO the game at any point. Congratulations!
+
+        NOTE: After you finish the assignment, please do more testings. Create your own map files and test your program.    
