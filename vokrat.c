@@ -4,6 +4,7 @@
 int main(int argc, char *argv[])
 {
     int result;
+    MapData data;
 
     if (argc != 2)
     {
@@ -12,15 +13,29 @@ int main(int argc, char *argv[])
     }
     else
     {
-        result = handle_file(argv[1]);
+        int ok = handle_file(argv[1], &data);
 
-        if (result == 1)
+        if (ok)
         {
-            result = 0; /* success → exit code 0 */
+            int r;
+            printf("Rows: %d, Cols: %d\n", data.sizeR, data.sizeC);
+
+            for (r = 0; r < data.sizeR; r++)
+            {
+                int c;
+                for (c = 0; c < data.sizeC; c++)
+                {
+                    printf("%d ", data.map[r][c]);
+                }
+                printf("\n");
+            }
+
+            free_map(&data);
+            result = 0;
         }
         else
         {
-            result = 1; /* failure → exit code 1 */
+            result = 1;
         }
     }
 
