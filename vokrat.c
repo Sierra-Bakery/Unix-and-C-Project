@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
     int result;
-    MapData data;
+    MapData data; /* Initialize the map data structure (3 variables; sizeR, sizeC, map) */
 
     if (argc != 2)
     {

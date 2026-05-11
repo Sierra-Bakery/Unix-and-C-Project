@@ -12,7 +12,7 @@ int handle_file(const char *filename, MapData *data)
 
     if (fp == NULL)
     {
-        fprintf(stderr, "Error: Could not open file \"%s\" for reading.\n", filename);
+        fprintf(stderr, "Error: Could not open file \"%s\"\n", filename);
         success = 0;
     }
     else
