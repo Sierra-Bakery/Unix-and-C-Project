@@ -3,13 +3,21 @@
 #include "display.h"
 #include "entities.h"
 
+/* Welcome to the game! */
+/* This is the main file for the game. It processes the map file, finds entity positions, and displays the map. */
+/* It also contains the main game loop */
+/* Made by Dylan Baker over May 2026 For my assignment on COMP1000 - Unix and C Programming */
+
 int main(int argc, char *argv[]) /* Takes command line arguments to processes the map file */
 {
+    /* Diagnostics */
     int printDiagnostics = 1; /* Set it to 1 enable diagnostics, 0 to disable. */
     int result;
+    /* Map dimensions */
     int sizeR;
     int sizeC;
     int **map;
+    /* Entity positions */
     int playerR,   playerC;
     int goalR,     goalC;
     int treasureR, treasureC;

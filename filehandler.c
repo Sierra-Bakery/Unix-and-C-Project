@@ -24,7 +24,7 @@ int handle_file(const char *filename, int *sizeR, int *sizeC, int ***map)
         for (r = 0; r < *sizeR; r++)
         {
             int c;
-            (*map)[r] = (int *)malloc(*sizeC * sizeof(int)); /* Allocate memory for each row of the map */
+            (*map)[r] = (int *)malloc(*sizeC * sizeof(int)); /* Allocate memory for each column of the map */
 
             for (c = 0; c < *sizeC; c++)
             {
