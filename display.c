@@ -2,15 +2,6 @@
 #include "display.h"
 #include "colour.h"
 
-/*
-    Map tile legend:
-        0  = empty cell  (plain background)
-        1  = wall        (white background, no character)
-        2  = goal        (green background, grey foreground 'g')
-        3  = treasure    (yellow background, grey foreground 'T')
-        4  = player      (blue foreground 'P')
-        5  = enemy       (red foreground '>')
-*/
 /* Prints the border of the map */
 static void print_border(int sizeC)
 {
