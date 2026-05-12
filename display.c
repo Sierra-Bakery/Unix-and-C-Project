@@ -36,7 +36,7 @@ static void render_cell(int tile)
     {
         colour_set_background("green");
         colour_set_foreground("white");
-        printf("g");
+        printf("G");
         colour_reset();
     }
     else if (tile == 3) /* Treasure */
@@ -65,21 +65,21 @@ static void render_cell(int tile)
 }
 
 /* Displays the game map */
-void display_map(MapData *data)
+void display_map(int sizeR, int sizeC, int **map)
 {
     int r;
 
-    print_border(data->sizeC);
+    print_border(sizeC);
 
-    for (r = 0; r < data->sizeR; r++) /* Renders each row of the map */
+    for (r = 0; r < sizeR; r++) /* Renders each row of the map */
     {
         int c;
         colour_reset();
         printf("*");
 
-        for (c = 0; c < data->sizeC; c++) /* Renders each cell in the row */
+        for (c = 0; c < sizeC; c++) /* Renders each cell in the row */
         {
-            render_cell(data->map[r][c]);
+            render_cell(map[r][c]);
             colour_reset();
         }
 
@@ -87,5 +87,5 @@ void display_map(MapData *data)
         printf("*\n");
     }
 
-    print_border(data->sizeC);
+    print_border(sizeC);
 }
