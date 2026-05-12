@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "filehandler.h"
 
-int handle_file(const char *filename, MapData *data)
+int handle_file(const char *filename, int *sizeR, int *sizeC, int ***map)
 {
     FILE *fp;
     int success;
@@ -17,18 +17,18 @@ int handle_file(const char *filename, MapData *data)
     }
     else
     {
-        fscanf(fp, "%d %d", &data->sizeR, &data->sizeC); /* Read the number of rows and columns from the file */
+        fscanf(fp, "%d %d", sizeR, sizeC); /* Read the number of rows and columns from the file */
 
-        data->map = (int **)malloc(data->sizeR * sizeof(int *)); /* Allocate memory for the map based on the number of rows */
+        *map = (int **)malloc(*sizeR * sizeof(int *)); /* Allocate memory for the map based on the number of rows */
 
-        for (r = 0; r < data->sizeR; r++)
+        for (r = 0; r < *sizeR; r++)
         {
             int c;
-            data->map[r] = (int *)malloc(data->sizeC * sizeof(int)); /* Allocate memory for each row of the map */
+            (*map)[r] = (int *)malloc(*sizeC * sizeof(int)); /* Allocate memory for each row of the map */
 
-            for (c = 0; c < data->sizeC; c++)
+            for (c = 0; c < *sizeC; c++)
             {
-                fscanf(fp, "%d", &data->map[r][c]); /* Read each element of the map from the file */
+                fscanf(fp, "%d", &(*map)[r][c]); /* Read each element of the map from the file */
             }
         }
 
@@ -39,16 +39,16 @@ int handle_file(const char *filename, MapData *data)
     return success;
 }
 
-void free_map(MapData *data)
+void free_map(int sizeR, int **map)
 {
     int r;
 
-    for (r = 0; r < data->sizeR; r++)
+    for (r = 0; r < sizeR; r++)
     {
-        free(data->map[r]); /* Free memory allocated for each row of the map */\
-        data->map[r] = NULL; /* Set the pointer to NULL after freeing */
+        free(map[r]); /* Free memory allocated for each row of the map */\
+        map[r] = NULL; /* Set the pointer to NULL after freeing */
     }
 
-    free(data->map);
-    data->map = NULL;
+    free(map);
+    map = NULL;
 }

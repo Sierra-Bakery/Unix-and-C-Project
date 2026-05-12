@@ -1,17 +1,10 @@
 #ifndef FILEHANDLER_H
 #define FILEHANDLER_H
 
-typedef struct
-{
-    int sizeR;
-    int sizeC;
-    int **map;
-} MapData;
-
 /* shows 1 for working and 0 for failure */
-int handle_file(const char *filename, MapData *data);
+int handle_file(const char *filename, int *sizeR, int *sizeC, int ***map);
 
 /* free memory from the map data */
-void free_map(MapData *data);
+void free_map(int sizeR, int **map);
 
 #endif /* FILEHANDLER_H */
