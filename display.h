@@ -3,6 +3,6 @@
 
 #include "filehandler.h"
 
-void display_map(const MapData *data);
+void display_map(MapData *data);
 
 #endif /* DISPLAY_H */

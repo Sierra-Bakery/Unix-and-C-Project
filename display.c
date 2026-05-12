@@ -1,79 +1,91 @@
 #include <stdio.h>
 #include "display.h"
-#include "color.h"
+#include "colour.h"
 
-/* Renders a single cell based on its map value */
-static void draw_cell(int value)
+/*
+    Map tile legend:
+        0  = empty cell  (plain background)
+        1  = wall        (white background, no character)
+        2  = goal        (green background, grey foreground 'g')
+        3  = treasure    (yellow background, grey foreground 'T')
+        4  = player      (blue foreground 'P')
+        5  = enemy       (red foreground '>')
+*/
+/* Prints the border of the map */
+static void print_border(int sizeC)
 {
-    switch (value)
-    {
-        case 1: /* Wall: white background, space */
-            setBackground("white");
-            printf("  ");
-            resetColour();
-            break;
-
-        case 2: /* Goal: green background, grey foreground 'g' */
-            setBackground("green");
-            setForeground("white");
-            printf(" g");
-            resetColour();
-            break;
-
-        case 3: /* Treasure: yellow background, grey foreground 'T' */
-            setBackground("yellow");
-            setForeground("white");
-            printf(" T");
-            resetColour();
-            break;
-
-        case 4: /* Player: blue foreground 'P' */
-            setForeground("blue");
-            printf(" P");
-            resetColour();
-            break;
-
-        case 5: /* Enemy: red foreground '>' */
-            setForeground("red");
-            printf(" >");
-            resetColour();
-            break;
-
-        default: /* Empty floor: just a dark space */
-            printf("  ");
-            break;
-    }
-}
-
-/* Draws a border row of '*' spanning the map width */
-static void draw_border(int sizeC)
-{
-    int c;
-    for (c = 0; c < (sizeC * 2) + 4; c++)
+    int i;
+    colour_reset();
+    printf("*");
+    for (i = 0; i < sizeC; i++)
     {
         printf("*");
     }
-    printf("\n");
+    printf("*\n");
+}
+/* Renders a single cell based on its tile type */
+static void render_cell(int tile)
+{
+    if (tile == 1) /* Wall */
+    {
+        colour_set_background("white");
+        printf(" ");
+        colour_reset();
+    }
+    else if (tile == 2) /* Goal */
+    {
+        colour_set_background("green");
+        colour_set_foreground("white");
+        printf("g");
+        colour_reset();
+    }
+    else if (tile == 3) /* Treasure */
+    {
+        colour_set_background("yellow");
+        colour_set_foreground("white");
+        printf("T");
+        colour_reset();
+    }
+    else if (tile == 4) /* Player */
+    {
+        colour_set_foreground("blue");
+        printf("P");
+        colour_reset();
+    }
+    else if (tile == 5) /* Enemy */
+    {
+        colour_set_foreground("red");
+        printf(">");
+        colour_reset();
+    }
+    else /* Empty cell */
+    {
+        printf(" ");
+    }
 }
 
-void display_map(const MapData *data)
+/* Displays the game map */
+void display_map(MapData *data)
 {
     int r;
 
-    draw_border(data->sizeC);
+    print_border(data->sizeC);
 
-    for (r = 0; r < data->sizeR; r++)
+    for (r = 0; r < data->sizeR; r++) /* Renders each row of the map */
     {
         int c;
-        printf("* ");
+        colour_reset();
+        printf("*");
 
-        for (c = 0; c < data->sizeC; c++)
+        for (c = 0; c < data->sizeC; c++) /* Renders each cell in the row */
         {
-            draw_cell(data->map[r][c]);
+            render_cell(data->map[r][c]);
+            colour_reset();
         }
 
-        printf(" *\n");
+        colour_reset();
+        printf("*\n");
     }
 
-    draw_border(data->sizeC);
+    print_border(data->sizeC);
 }
