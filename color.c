@@ -3,6 +3,9 @@
 #include<string.h>
 #include"color.h"
 
+/* NOTE: This file contains functions from Curtin University's Assignment supplementary materials */
+/* Credit - Curtin University Assignment supplementary materials: Changing Colors.zip */
+
 void setForeground(char * color)
 {
     if(strcmp(color, "black") == 0)
