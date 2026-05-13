@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     /* Diagnostics */
     int printDiagnostics = 1; /* Set it to 1 enable diagnostics, 0 to disable. */
     int result;
+    int continueGame = 1; /* Set it to 0 to end the game, 1 to continue. */
     /* Map dimensions */
     int sizeR;
     int sizeC;
@@ -22,6 +23,9 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     int goalR,     goalC;
     int treasureR, treasureC;
     int enemyR,    enemyC;
+    /* Entity attributes */
+    int enemyAggro = 0; /* 0 for passive, 1 for aggressive */
+    int playerHasTreasure = 0; /* 0 for no treasure, 1 for has treasure */
 
     if (argc != 2) /* Check if the correct number of command line arguments is provided */
     {
@@ -31,24 +35,23 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     else
     {
         int ok = handle_file(argv[1], &sizeR, &sizeC, &map); /* Process the map and store the data. Returns 1 if it worked*/
- 
-        if (ok)
+        find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
+
+        if (printDiagnostics)
         {
-            find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
-            if (printDiagnostics)
-            {
-                printf("Player: %d, %d\n", playerR, playerC);
-                printf("Goal: %d, %d\n", goalR, goalC);
-                printf("Treasure: %d, %d\n", treasureR, treasureC);
-                printf("Enemy: %d, %d\n", enemyR, enemyC);
-            }
-            display_map(sizeR, sizeC, map);
+            printf("Player: %d, %d\n", playerR, playerC);
+            printf("Goal: %d, %d\n", goalR, goalC);
+            printf("Treasure: %d, %d\n", treasureR, treasureC);
+            printf("Enemy: %d, %d\n", enemyR, enemyC);
+            printf("Enemy Aggro: %d\n", enemyAggro);
+            printf("Player Has Treasure: %d\n", playerHasTreasure);
+        }
+ 
+        while (ok && continueGame)
+        {
+            display_map(sizeR, sizeC, map, enemyAggro);
             free_map(sizeR, map);
             result = 0;
-        }
-        else
-        {
-            result = 1;
         }
     }
 
