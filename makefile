@@ -2,8 +2,8 @@ CC      = gcc
 CFLAGS  = -ansi -pedantic -pedantic-errors -Wall -Wextra -Werror \
           -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition
 
-TARGET  = vokrat
-SRCS    = vokrat.c filehandler.c colour.c color.c display.c entities.c
+TARGET  = labyrinth
+SRCS    = labyrinth.c filehandler.c colour.c color.c display.c entities.c
 OBJS    = $(SRCS:.c=.o)
 
 .PHONY: all clean
@@ -13,7 +13,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-vokrat.o: vokrat.c filehandler.h display.h entities.h
+labyrinth.o: labyrinth.c filehandler.h display.h entities.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 filehandler.o: filehandler.c filehandler.h
