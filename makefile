@@ -3,7 +3,7 @@ CFLAGS  = -ansi -pedantic -pedantic-errors -Wall -Wextra -Werror \
           -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition
 
 TARGET  = labyrinth
-SRCS    = labyrinth.c filehandler.c colour.c color.c display.c entities.c
+SRCS    = labyrinth.c filehandler.c colour.c color.c display.c entities.c random.c game.c
 OBJS    = $(SRCS:.c=.o)
 
 .PHONY: all clean
@@ -13,7 +13,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-labyrinth.o: labyrinth.c filehandler.h display.h entities.h
+labyrinth.o: labyrinth.c filehandler.h display.h entities.h random.h game.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 filehandler.o: filehandler.c filehandler.h
@@ -31,5 +31,11 @@ display.o: display.c display.h filehandler.h colour.h
 entities.o: entities.c entities.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
+random.o: random.c random.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+game.o: game.c game.h filehandler.h display.h entities.h random.h
+	$(CC) $(CFLAGS) -c $< -o $@
+	
 clean:
 	rm -f $(OBJS) $(TARGET)
