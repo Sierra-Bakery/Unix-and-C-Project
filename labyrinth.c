@@ -2,6 +2,7 @@
 #include "filehandler.h"
 #include "display.h"
 #include "entities.h"
+#include "game.h"
 
 /* Welcome to the game! */
 /* This is the main file for the game. It processes the map file, finds entity positions, and displays the map. */
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
         fprintf(stderr, "Usage: %s <map_file>\n", argv[0]); /* Print usage message if command line arguments are not correct */
         result = 1;
     }
-    else
+    else /* Starts the game */
     {
         int ok = handle_file(argv[1], &sizeR, &sizeC, &map); /* Process the map and store the data. Returns 1 if it worked*/
         find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
@@ -50,9 +51,11 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
         while (ok && continueGame)
         {
             display_map(sizeR, sizeC, map, enemyAggro);
-            free_map(sizeR, map);
-            result = 0;
+            continueGame = gameTick(map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, playerHasTreasure, &continueGame);
         }
+
+    printf("Game Over!\n");
+    free_map(sizeR, map);
     }
 
     return result;
