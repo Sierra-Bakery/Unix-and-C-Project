@@ -76,6 +76,11 @@ void display_map(int sizeR, int sizeC, int **map)
 
         colour_reset();
         printf("*\n");
+        printf("Press 'w' to move UP");
+        printf("Press 's' to move DOWN");
+        printf("Press 'a' to move LEFT");
+        printf("Press 'd' to move RIGHT");
+        printf("Press 'u' to move UNDO");
     }
 
     print_border(sizeC);
