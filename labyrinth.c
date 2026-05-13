@@ -3,6 +3,7 @@
 #include "display.h"
 #include "entities.h"
 #include "game.h"
+#include "random.h"
 
 /* Welcome to the game! */
 /* This is the main file for the game. It processes the map file, finds entity positions, and displays the map. */
@@ -27,6 +28,8 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     /* Entity attributes */
     int enemyAggro = 0; /* 0 for passive, 1 for aggressive */
     int playerHasTreasure = 0; /* 0 for no treasure, 1 for has treasure */
+
+    initRandom(); /* Initialize the random number generator */
 
     if (argc != 2) /* Check if the correct number of command line arguments is provided */
     {
