@@ -3,6 +3,6 @@
 
 #include "filehandler.h"
 
-void display_map(int sizeR, int sizeC, int **map);
+void display_map(int sizeR, int sizeC, int **map, int enemyAggro);
 
 #endif /* DISPLAY_H */

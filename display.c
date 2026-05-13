@@ -14,8 +14,8 @@ static void print_border(int sizeC)
     }
     printf("*\n");
 }
-/* Renders a single cell based on its tile type */
-static void render_cell(int tile)
+/* Renders a single cell based on its type */
+static void render_cell(int tile, int enemyAggro)
 {
     if (tile == 1) /* Wall */
     {
@@ -45,7 +45,15 @@ static void render_cell(int tile)
     }
     else if (tile == 5) /* Enemy */
     {
-        colour_set_foreground("red");
+        if (enemyAggro == 1) /* If the enemy is aggressive, make it white with a red background */
+        {
+            colour_set_background("red");
+            colour_set_foreground("white");
+        }
+        else
+        {
+            colour_set_foreground("red");
+        }
         printf(">");
         colour_reset();
     }
@@ -56,7 +64,7 @@ static void render_cell(int tile)
 }
 
 /* Displays the game map */
-void display_map(int sizeR, int sizeC, int **map)
+void display_map(int sizeR, int sizeC, int **map, int enemyAggro)
 {
     int r;
 
@@ -70,18 +78,18 @@ void display_map(int sizeR, int sizeC, int **map)
 
         for (c = 0; c < sizeC; c++) /* Renders each cell in the row */
         {
-            render_cell(map[r][c]);
+            render_cell(map[r][c], enemyAggro);
             colour_reset();
         }
-
-        colour_reset();
         printf("*\n");
-        printf("Press 'w' to move UP");
-        printf("Press 's' to move DOWN");
-        printf("Press 'a' to move LEFT");
-        printf("Press 'd' to move RIGHT");
-        printf("Press 'u' to move UNDO");
+        colour_reset();
     }
 
     print_border(sizeC);
+
+    printf("Press 'w' to move UP\n");
+    printf("Press 's' to move DOWN\n");
+    printf("Press 'a' to move LEFT\n");
+    printf("Press 'd' to move RIGHT\n");
+    printf("Press 'u' to move UNDO\n");
 }
