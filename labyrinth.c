@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) /* Takes command line arguments to processes the map file */
 {
     /* Diagnostics */
-    int printDiagnostics = 1; /* Set it to 1 enable diagnostics, 0 to disable. */
+    int printDiagnostics = 0; /* Set it to 1 enable diagnostics, 0 to disable. */
     int result;
     int continueGame = 1; /* Set it to 0 to end the game, 1 to continue. */
     /* Map dimensions */
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
         while (ok && continueGame)
         {
             display_map(sizeR, sizeC, map, enemyAggro);
-            gameTick(map, sizeR, sizeC, &playerR, &playerC, goalR, goalC, treasureR, treasureC, &enemyR, &enemyC, enemyAggro, &playerHasTreasure, &continueGame);
+            gameTick(map, sizeR, sizeC, &playerR, &playerC, goalR, goalC, treasureR, treasureC, &enemyR, &enemyC, &enemyAggro, &playerHasTreasure, &continueGame);
         }
 
     printf("Game Over!\n");

@@ -60,20 +60,18 @@ static void move_enemy(int **map, int rows, int cols,
         }
  
         /* bounds check BEFORE accessing map to prevent segfault */
-        if (newR < 0 || newR >= rows || newC < 0 || newC >= cols)
+        if (newR >= 0 && newR < rows && newC >= 0 && newC < cols)
         {
-            continue;
-        }
- 
-        blocked = (map[newR][newC] == 1);
- 
-        if (!blocked)
-        {
-            map[*enemyR][*enemyC] = 0;
-            map[newR][newC]       = 4;
-            *enemyR = newR;
-            *enemyC = newC;
-            inputValid = 1;
+            blocked = (map[newR][newC] == 1);
+
+            if (!blocked)
+            {
+                map[*enemyR][*enemyC] = 0;
+                map[newR][newC]       = 5;
+                *enemyR = newR;
+                *enemyC = newC;
+                inputValid = 1;
+            }
         }
     }
     return;
@@ -115,21 +113,21 @@ static void move_player(int **map, int rows, int cols,
         }
  
         /* bounds check BEFORE accessing map to prevent segfault */
-        if (newR < 0 || newR >= rows || newC < 0 || newC >= cols)
+        if (newR >= 0 && newR < rows && newC >= 0 && newC < cols)
         {
-            continue;
+            blocked = (map[newR][newC] == 1);
+ 
+            if (!blocked)
+            {
+                map[*playerR][*playerC] = 0;
+                map[newR][newC]         = 4;
+                *playerR = newR;
+                *playerC = newC;
+                inputValid = 1;
+            }
         }
  
-        blocked = (map[newR][newC] == 1);
- 
-        if (!blocked)
-        {
-            map[*playerR][*playerC] = 0;
-            map[newR][newC]         = 4;
-            *playerR = newR;
-            *playerC = newC;
-            inputValid = 1;
-        }
+
     }
     return;
 }
@@ -144,12 +142,13 @@ static void check_caught(int playerR, int playerC, int enemyR, int enemyC, int *
     }
 }
  
-static void check_treasure(int playerR, int playerC, int treasureR, int treasureC, int *playerHasTreasure)
+static void check_treasure(int playerR, int playerC, int treasureR, int treasureC, int *playerHasTreasure, int *enemyAggro)
 {
     if (playerR == treasureR && playerC == treasureC)
     {
         printf("You found the treasure!\n");
         *playerHasTreasure = 1;
+        *enemyAggro = 1;
     }
 }
  
@@ -165,15 +164,15 @@ static void check_goal(int playerR, int playerC, int goalR, int goalC, int playe
 /* Processes one tick of the game */
 int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
              int goalR, int goalC, int treasureR, int treasureC,
-             int *enemyR, int *enemyC, int enemyAggro, int *playerHasTreasure,
+             int *enemyR, int *enemyC, int *enemyAggro, int *playerHasTreasure,
              int *continueGame)
 {
     move_player(map, rows, cols, playerR, playerC);
     check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
-    check_treasure(*playerR, *playerC, treasureR, treasureC, playerHasTreasure);
+    check_treasure(*playerR, *playerC, treasureR, treasureC, playerHasTreasure, enemyAggro);
     check_goal(*playerR, *playerC, goalR, goalC, *playerHasTreasure, continueGame);
  
-    if (enemyAggro)
+    if (*enemyAggro)
     {
         move_enemy(map, rows, cols, enemyR, enemyC);
         check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
