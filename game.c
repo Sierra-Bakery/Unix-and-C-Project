@@ -33,24 +33,24 @@ static void newSleep(float timeInSeconds)
 {
     struct timespec ts;
     ts.tv_sec = (int) timeInSeconds;
-    ts.tv_nsec = (timeInSeconds - ((int) timeInSeconds)) * 1000000000;
+    ts.tv_nsec = (long)((timeInSeconds - ((int) timeInSeconds)) * 1000000000);
     nanosleep(&ts, NULL);
 }
 
 static void move_enemy(int **map, int rows, int cols,
-                       int *enemyR, int *enemyC, int *enemyDirection)
+                       int *enemyR, int *enemyC, int *enemyDirection, int *tileBelow)
 {
     int newR;
     int newC;
     int blocked;
     int input;
-    int inputValid = 0; /* 0 for invalid input, 1 for valid input */
- 
+    int inputValid = 0;
+
     while (inputValid == 0)
     {
         newR = *enemyR;
         newC = *enemyC;
- 
+
         input = random_int(0, 3);
         if (input == 0)
         {
@@ -72,16 +72,25 @@ static void move_enemy(int **map, int rows, int cols,
             newC = *enemyC + 1;
             *enemyDirection = 3;
         }
- 
-        /* bounds check BEFORE accessing map to prevent segfault */
+
+        /* Bounds check BEFORE accessing map to prevent segfault */
         if (newR >= 0 && newR < rows && newC >= 0 && newC < cols)
         {
             blocked = (map[newR][newC] == 1);
 
             if (!blocked)
             {
-                map[*enemyR][*enemyC] = 0;
-                map[newR][newC]       = 5;
+                /* Restore the tile the enemy is leaving */
+                map[*enemyR][*enemyC] = *tileBelow;
+
+                /* Save whatever is on the destination tile before overwriting */
+                *tileBelow = map[newR][newC];
+                if (*tileBelow == 5)
+                {
+                    *tileBelow = 0; /* Shouldn't happen, but guard anyway */
+                }
+
+                map[newR][newC] = 5;
                 *enemyR = newR;
                 *enemyC = newC;
                 inputValid = 1;
@@ -126,7 +135,7 @@ static void move_player(int **map, int rows, int cols,
             newC = *playerC + 1;
         }
  
-        /* bounds check BEFORE accessing map to prevent segfault */
+        /* Bounds check BEFORE accessing map to prevent segfault */
         if (newR >= 0 && newR < rows && newC >= 0 && newC < cols)
         {
             blocked = (map[newR][newC] == 1);
@@ -140,12 +149,9 @@ static void move_player(int **map, int rows, int cols,
                 inputValid = 1;
             }
         }
- 
-
     }
     return;
 }
-
 
 static void check_caught(int playerR, int playerC, int enemyR, int enemyC, int *continueGame)
 {
@@ -179,8 +185,10 @@ static void check_goal(int playerR, int playerC, int goalR, int goalC, int playe
 int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
              int goalR, int goalC, int treasureR, int treasureC,
              int *enemyR, int *enemyC, int *enemyAggro, int *playerHasTreasure,
-             int *continueGame, int *enemyDirection)
+             int *continueGame, int *enemyDirection, int *tileBelow)
 {
+    int i;
+
     move_player(map, rows, cols, playerR, playerC);
     check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
     check_treasure(*playerR, *playerC, treasureR, treasureC, playerHasTreasure, enemyAggro);
@@ -188,25 +196,22 @@ int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
  
     if (*enemyAggro)
     {
-        int i;
-        for (i = 0; i < 3; i++) /* Move the enemy 3 times*/
+        for (i = 0; i < 3; i++) /* Move the enemy 3 times */
         {
-            newSleep(0.1); /* POSSIBLE SLEEP INCLUDE? */
-            move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection);
+            newSleep(0.1);
+            move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection, tileBelow);
             check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
             display_map(rows, cols, map, *enemyAggro, *enemyDirection);
         }
     }
     else
     {
-        int i;
-        for (i = 0; i < 2; i++) /* Move the enemy 2 times*/
+        for (i = 0; i < 2; i++) /* Move the enemy 2 times */
         {
-            newSleep(0.1); /* POSSIBLE SLEEP INCLUDE? */
-            move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection);
+            newSleep(0.1);
+            move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection, tileBelow);
             check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
             display_map(rows, cols, map, *enemyAggro, *enemyDirection);
-
         }
     }
  
