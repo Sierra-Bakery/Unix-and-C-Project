@@ -41,6 +41,7 @@ static void render_cell(int tile, int enemyAggro, int enemyDirection)
     }
     else if (tile == 4) /* Player */
     {
+        colour_set_background("black");
         colour_set_foreground("blue");
         printf("P");
         colour_reset();
@@ -54,6 +55,7 @@ static void render_cell(int tile, int enemyAggro, int enemyDirection)
         }
         else
         {
+            colour_set_background("black");
             colour_set_foreground("red");
         }
         if (enemyDirection == 0) /* Up */
