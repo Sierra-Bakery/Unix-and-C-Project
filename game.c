@@ -76,6 +76,7 @@ static void move_enemy(int **map, int rows, int cols,
             inputValid = 1;
         }
     }
+    return;
 }
  
 static void move_player(int **map, int rows, int cols,
@@ -130,6 +131,7 @@ static void move_player(int **map, int rows, int cols,
             inputValid = 1;
         }
     }
+    return;
 }
 
 

@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
         while (ok && continueGame)
         {
             display_map(sizeR, sizeC, map, enemyAggro);
-            gameTick(map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, playerHasTreasure, &continueGame);
+            gameTick(map, sizeR, sizeC, &playerR, &playerC, goalR, goalC, treasureR, treasureC, &enemyR, &enemyC, enemyAggro, &playerHasTreasure, &continueGame);
         }
 
     printf("Game Over!\n");
