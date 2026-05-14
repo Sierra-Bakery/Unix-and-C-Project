@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE /* For sleep */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,14 @@ static void enableBuffer(void)
     tcsetattr(0, TCSANOW, &mode);
 }
 /* End of code from Curtin University's Assignment supplementary materials: How to Make a Program Accept a Char Immediately.zip */
+
+static void newSleep(float timeInSeconds)
+{
+    struct timespec ts;
+    ts.tv_sec = (int) timeInSeconds;
+    ts.tv_nsec = (timeInSeconds - ((int) timeInSeconds)) * 1000000000;
+    nanosleep(&ts, NULL);
+}
 
 static void move_enemy(int **map, int rows, int cols,
                        int *enemyR, int *enemyC, int *enemyDirection)
@@ -182,10 +191,10 @@ int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
         int i;
         for (i = 0; i < 3; i++) /* Move the enemy 3 times*/
         {
+            newSleep(0.1); /* POSSIBLE SLEEP INCLUDE? */
             move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection);
             check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
-            display_map(rows, cols, map, *enemyAggro);
-            /* POSSIBLE SLEEP INCLUDE? */
+            display_map(rows, cols, map, *enemyAggro, *enemyDirection);
         }
     }
     else
@@ -193,10 +202,11 @@ int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
         int i;
         for (i = 0; i < 2; i++) /* Move the enemy 2 times*/
         {
+            newSleep(0.1); /* POSSIBLE SLEEP INCLUDE? */
             move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection);
             check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
-            display_map(rows, cols, map, *enemyAggro);
-            /* POSSIBLE SLEEP INCLUDE? */
+            display_map(rows, cols, map, *enemyAggro, *enemyDirection);
+
         }
     }
  

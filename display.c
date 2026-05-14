@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "display.h"
 #include "colour.h"
 
@@ -14,8 +15,9 @@ static void print_border(int sizeC)
     }
     printf("*\n");
 }
+
 /* Renders a single cell based on its type */
-static void render_cell(int tile, int enemyAggro)
+static void render_cell(int tile, int enemyAggro, int enemyDirection)
 {
     if (tile == 1) /* Wall */
     {
@@ -54,20 +56,43 @@ static void render_cell(int tile, int enemyAggro)
         {
             colour_set_foreground("red");
         }
-        printf(">");
+        if (enemyDirection == 0) /* Up */
+        {
+            printf("^");
+        }
+        else if (enemyDirection == 1) /* Down */
+        {
+            printf("v");
+        }
+        else if (enemyDirection == 2) /* Left */
+        {
+            printf("<");
+        }
+        else if (enemyDirection == 3) /* Right */
+        {
+            printf(">");
+        }
         colour_reset();
     }
     else /* Empty cell */
     {
+        colour_set_background("black");
         printf(" ");
     }
 }
 
+static void clear_screen(void)
+{
+    system("clear");
+    system("tput cup 0 0"); /* Moves cursor to top corner */
+}
+
 /* Displays the game map */
-void display_map(int sizeR, int sizeC, int **map, int enemyAggro)
+void display_map(int sizeR, int sizeC, int **map, int enemyAggro, int enemyDirection)
 {
     int r;
 
+    clear_screen();
     print_border(sizeC);
 
     for (r = 0; r < sizeR; r++) /* Renders each row of the map */
@@ -78,7 +103,7 @@ void display_map(int sizeR, int sizeC, int **map, int enemyAggro)
 
         for (c = 0; c < sizeC; c++) /* Renders each cell in the row */
         {
-            render_cell(map[r][c], enemyAggro);
+            render_cell(map[r][c], enemyAggro, enemyDirection);
             colour_reset();
         }
         printf("*\n");

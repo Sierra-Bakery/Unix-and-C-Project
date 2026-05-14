@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
  
         while (ok && continueGame)
         {
-            display_map(sizeR, sizeC, map, enemyAggro);
+            display_map(sizeR, sizeC, map, enemyAggro, enemyDirection);
             gameTick(map, sizeR, sizeC, &playerR, &playerC, goalR, goalC, treasureR, treasureC, &enemyR, &enemyC, &enemyAggro, &playerHasTreasure, &continueGame, &enemyDirection);
         }
 
