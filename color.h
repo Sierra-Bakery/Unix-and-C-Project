@@ -1,8 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-/* Credit - https://en.wikipedia.org/wiki/ANSI_escape_code#Colors */
-/*        - Curtin University Assignment supplementary materials: Changing Colors.zip */
+/* NOTE: This file contains functions from Curtin University's Assignment supplementary materials */
+/* Credit - Curtin University Assignment supplementary materials: Changing Colors.zip */
 
 void setForeground(char * color);
 void setBackground(char * color);
