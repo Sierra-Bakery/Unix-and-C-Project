@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
+#include <time.h>
 #include "game.h"
 #include "display.h"
 #include "random.h"
@@ -28,7 +29,7 @@ static void enableBuffer(void)
 /* End of code from Curtin University's Assignment supplementary materials: How to Make a Program Accept a Char Immediately.zip */
 
 static void move_enemy(int **map, int rows, int cols,
-                       int *enemyR, int *enemyC)
+                       int *enemyR, int *enemyC, int *enemyDirection)
 {
     int newR;
     int newC;
@@ -45,18 +46,22 @@ static void move_enemy(int **map, int rows, int cols,
         if (input == 0)
         {
             newR = *enemyR - 1;
+            *enemyDirection = 0;
         }
         else if (input == 1)
         {
             newR = *enemyR + 1;
+            *enemyDirection = 1;
         }
         else if (input == 2)
         {
             newC = *enemyC - 1;
+            *enemyDirection = 2;
         }
         else if (input == 3)
         {
             newC = *enemyC + 1;
+            *enemyDirection = 3;
         }
  
         /* bounds check BEFORE accessing map to prevent segfault */
@@ -165,7 +170,7 @@ static void check_goal(int playerR, int playerC, int goalR, int goalC, int playe
 int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
              int goalR, int goalC, int treasureR, int treasureC,
              int *enemyR, int *enemyC, int *enemyAggro, int *playerHasTreasure,
-             int *continueGame)
+             int *continueGame, int *enemyDirection)
 {
     move_player(map, rows, cols, playerR, playerC);
     check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
@@ -174,19 +179,25 @@ int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
  
     if (*enemyAggro)
     {
-        move_enemy(map, rows, cols, enemyR, enemyC);
-        check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
-        move_enemy(map, rows, cols, enemyR, enemyC);
-        check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
-        move_enemy(map, rows, cols, enemyR, enemyC);
-        check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
+        int i;
+        for (i = 0; i < 3; i++) /* Move the enemy 3 times*/
+        {
+            move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection);
+            check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
+            display_map(rows, cols, map, *enemyAggro);
+            /* POSSIBLE SLEEP INCLUDE? */
+        }
     }
     else
     {
-        move_enemy(map, rows, cols, enemyR, enemyC);
-        check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
-        move_enemy(map, rows, cols, enemyR, enemyC);
-        check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
+        int i;
+        for (i = 0; i < 2; i++) /* Move the enemy 2 times*/
+        {
+            move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection);
+            check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
+            display_map(rows, cols, map, *enemyAggro);
+            /* POSSIBLE SLEEP INCLUDE? */
+        }
     }
  
     return 1;

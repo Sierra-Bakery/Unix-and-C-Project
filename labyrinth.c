@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     int enemyR,    enemyC;
     /* Entity attributes */
     int enemyAggro = 0; /* 0 for passive, 1 for aggressive */
+    int enemyDirection = 0; /* 0 for up, 1 for down, 2 for left, 3 for right */
     int playerHasTreasure = 0; /* 0 for no treasure, 1 for has treasure */
 
     void initRandom(void); /* Initialize the random number generator */
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
         while (ok && continueGame)
         {
             display_map(sizeR, sizeC, map, enemyAggro);
-            gameTick(map, sizeR, sizeC, &playerR, &playerC, goalR, goalC, treasureR, treasureC, &enemyR, &enemyC, &enemyAggro, &playerHasTreasure, &continueGame);
+            gameTick(map, sizeR, sizeC, &playerR, &playerC, goalR, goalC, treasureR, treasureC, &enemyR, &enemyC, &enemyAggro, &playerHasTreasure, &continueGame, &enemyDirection);
         }
 
     printf("Game Over!\n");
