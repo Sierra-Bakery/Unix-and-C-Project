@@ -4,7 +4,7 @@
 
 /* NOTE: This file contains functions from Curtin University's Assignment supplementary materials */
 /* Credit - Curtin University Assignment supplementary materials: Random Number Generator.zip */
-void initRandom()
+void initRandom(void)
 {
     srand(time(NULL));
 }
