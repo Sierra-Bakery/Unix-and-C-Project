@@ -161,7 +161,7 @@ static void draw_tile(int r, int c, int isLetter, int faded)
         /* Faded and is a letter: reveal it as black on orange */
         colour_set_background("black"); /* closest to orange in ANSI */
         colour_set_foreground("black");
-        printf("#");
+        printf(" ");
     }
     else
     {
