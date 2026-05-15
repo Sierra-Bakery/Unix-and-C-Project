@@ -4,6 +4,7 @@
 #include "entities.h"
 #include "game.h"
 #include "random.h"
+#include "history.h"
 
 /* Welcome to the game! */
 /* This is the main file for the game. It processes the map file, finds entity positions, and displays the map. */
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     int tileBelow = 0;    /* Value of the tile the enemy is standing on */
 
     void initRandom(void); /* Initialize the random number generator */
+    struct History *history; /* The history of the game */
 
     if (argc != 2) /* Check if the correct number of command line arguments is provided */
     {
@@ -42,6 +44,9 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     {
         int ok = handle_file(argv[1], &sizeR, &sizeC, &map); /* Process the map and store the data. Returns 1 if it worked*/
         find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
+        history_init(history); /* Initialize the history */
+        /* Save the initial state to the history */
+        history_push(history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
 
         if (printDiagnostics)
         {
@@ -60,10 +65,12 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
                     goalR, goalC, treasureR, treasureC,
                     &enemyR, &enemyC, &enemyAggro, &playerHasTreasure,
                     &continueGame, &enemyDirection, &tileBelow);
+            history_push(history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
         }
 
     printf("Game Over!\n");
     free_map(sizeR, map);
+    history_free(history); /* Free the history */
     }
 
     return result;

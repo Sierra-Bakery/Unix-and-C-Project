@@ -10,7 +10,7 @@ static int **copy_map(int sizeR, int sizeC, int **src)
     int **dst;
     int r;
 
-    dst = (int **)malloc(sizeR * sizeof(int *));
+    dst = (int **)malloc(sizeR * sizeof(int *)); /* Allocate memory for the row pointers */
     if (dst == NULL)
     {
         return NULL;
@@ -18,19 +18,19 @@ static int **copy_map(int sizeR, int sizeC, int **src)
 
     for (r = 0; r < sizeR; r++)
     {
-        dst[r] = (int *)malloc(sizeC * sizeof(int));
+        dst[r] = (int *)malloc(sizeC * sizeof(int)); /* Allocate memory for each row */
         if (dst[r] == NULL)
         {
             /* Free any rows already allocated before it */
             while (r > 0)
             {
-                r--;
+                r = r - 1;
                 free(dst[r]);
             }
             free(dst);
             return NULL;
         }
-        memcpy(dst[r], src[r], sizeC * sizeof(int));
+        memcpy(dst[r], src[r], sizeC * sizeof(int)); /* Copy the row data from src to dst */
     }
 
     return dst;
@@ -47,16 +47,16 @@ static void free_map_copy(int sizeR, int **map)
     }
     for (r = 0; r < sizeR; r++)
     {
-        free(map[r]);
+        free(map[r]); /* Free each row */
     }
-    free(map);
+    free(map); /* Free the array of row pointers */
 }
 
 /* Sets up the history for it to be ready to use */
 void history_init(struct History *history)
 {
-    history->top = NULL;
-    history->size = 0;
+    history -> top = NULL; /* No states saved */
+    history -> size = 0; /* No nodes in the stack */
 }
 
 /* Saves the current game state as a new entry at the top of the history */
@@ -66,14 +66,14 @@ int history_push(struct History *history,
                 int enemyR, int enemyC, int enemyAggro, int enemyDirection,
                 int playerHasTreasure, int tileBelow)
 {
-    struct HistoryNode *node;
-    int **mapCopy;
+    struct HistoryNode *node; /* The new node to be added to the stack */
+    int **mapCopy; /* A copy of the map to be stored in the node */
 
     /* Allocate memory for a new node */
     node = (struct HistoryNode *)malloc(sizeof(struct HistoryNode));
     if (node == NULL)
     {
-        fprintf(stderr, "history_push: out of memory\n");
+        fprintf(stderr, "couldn't allocate memory for the history node\n");
         return 0;
     }
 
@@ -81,32 +81,32 @@ int history_push(struct History *history,
     mapCopy = copy_map(sizeR, sizeC, map);
     if (mapCopy == NULL)
     {
-        fprintf(stderr, "history_push: failed to copy map\n");
+        fprintf(stderr, "couldn't copy map\n");
         free(node);
         return 0;
     }
 
-    /* Save everything into the node */
-    node->state.sizeR             = sizeR;
-    node->state.sizeC             = sizeC;
-    node->state.map               = mapCopy;
-    node->state.playerR           = playerR;
-    node->state.playerC           = playerC;
-    node->state.goalR             = goalR;
-    node->state.goalC             = goalC;
-    node->state.treasureR         = treasureR;
-    node->state.treasureC         = treasureC;
-    node->state.enemyR            = enemyR;
-    node->state.enemyC            = enemyC;
-    node->state.enemyAggro        = enemyAggro;
-    node->state.enemyDirection    = enemyDirection;
-    node->state.playerHasTreasure = playerHasTreasure;
-    node->state.tileBelow         = tileBelow;
+    /* Save everything in the game state to the node */
+    node -> state.sizeR = sizeR;
+    node -> state.sizeC = sizeC;
+    node -> state.map = mapCopy;
+    node -> state.playerR = playerR;
+    node -> state.playerC = playerC;
+    node -> state.goalR = goalR;
+    node -> state.goalC = goalC;
+    node -> state.treasureR = treasureR;
+    node -> state.treasureC = treasureC;
+    node -> state.enemyR = enemyR;
+    node -> state.enemyC = enemyC;
+    node -> state.enemyAggro = enemyAggro;
+    node -> state.enemyDirection = enemyDirection;
+    node -> state.playerHasTreasure = playerHasTreasure;
+    node -> state.tileBelow = tileBelow;
 
-    /* Place the new node at the top of the stack */
-    node->prev = history->top;
-    history->top     = node;
-    history->size++;
+    /* Put the new node at the top of the stack */
+    node -> prev = history -> top; /* The previous top node is now the second node in the stack */
+    history -> top = node; /* Update the top pointer to the new node */
+    history -> size++; /* Increase the size of the stack */
 
     return 1;
 }
@@ -119,42 +119,42 @@ int history_undo(struct History *history,
                 int *enemyR, int *enemyC, int *enemyAggro, int *enemyDirection,
                 int *playerHasTreasure, int *tileBelow)
 {
-    struct HistoryNode *node;
-    struct GameState   *s;
+    struct HistoryNode *node; /* The node to be undone */
+    struct GameState *s; /* The game state stored in that node */
 
-    if (history->top == NULL)
+    if (history -> top == NULL)
     {
         printf("Nothing to undo.\n");
         return 0;
     }
 
-    node = history->top;
-    s    = &node->state;
+    node = history -> top;
+    s = &node -> state;
 
     /* Free the current live map before replacing it with the saved one */
     free_map_copy(*sizeR, *map);
 
     /* Copy all saved values back into the game variables */
-    *sizeR = s->sizeR;
-    *sizeC = s->sizeC;
-    *map = s->map;   /* The caller now owns this map */
-    *playerR = s->playerR;
-    *playerC = s->playerC;
-    *goalR = s->goalR;
-    *goalC = s->goalC;
-    *treasureR = s->treasureR;
-    *treasureC = s->treasureC;
-    *enemyR = s->enemyR;
-    *enemyC = s->enemyC;
-    *enemyAggro = s->enemyAggro;
-    *enemyDirection = s->enemyDirection;
-    *playerHasTreasure = s->playerHasTreasure;
-    *tileBelow = s->tileBelow;
+    *sizeR = s -> sizeR;
+    *sizeC = s -> sizeC;
+    *map = s -> map;   /* The caller now owns this map */
+    *playerR = s -> playerR;
+    *playerC = s -> playerC;
+    *goalR = s -> goalR;
+    *goalC = s -> goalC;
+    *treasureR = s -> treasureR;
+    *treasureC = s -> treasureC;
+    *enemyR = s -> enemyR;
+    *enemyC = s -> enemyC;
+    *enemyAggro = s -> enemyAggro;
+    *enemyDirection = s -> enemyDirection;
+    *playerHasTreasure = s -> playerHasTreasure;
+    *tileBelow = s -> tileBelow;
 
     /* Remove the node from the stack and free it */
     /* The map is owned by the caler so free later */
-    history->top = node->prev;
-    history->size--;
+    history -> top = node -> prev;
+    history -> size--;
     free(node);
 
     return 1;
@@ -163,18 +163,18 @@ int history_undo(struct History *history,
 /* Frees all history nodes and the saved data */
 void history_free(struct History *history)
 {
-    struct HistoryNode *current;
-    struct HistoryNode *prev;
+    struct HistoryNode *current; /* The node currently being freed */
+    struct HistoryNode *prev; /* The previous node */
 
-    current = history->top;
+    current = history -> top; /* Start at the top of the stack */
     while (current != NULL)
     {
-        prev = current->prev;
-        free_map_copy(current->state.sizeR, current->state.map);
+        prev = current -> prev; /* Save the previous node before freeing the current one */
+        free_map_copy(current -> state.sizeR, current -> state.map);
         free(current);
         current = prev;
     }
 
-    history->top  = NULL;
-    history->size = 0;
+    history -> top  = NULL;
+    history -> size = 0;
 }

@@ -7,6 +7,7 @@
 #include "game.h"
 #include "display.h"
 #include "random.h"
+#include "history.h"
 
 /* NOTE: This file contains functions from Curtin University's Assignment supplementary materials */
 /* Credit - Curtin University Assignment supplementary materials: How to Make a Program Accept a Char Immediately.zip */
@@ -117,6 +118,8 @@ static void move_player(int **map, int rows, int cols,
         disableBuffer();
         scanf(" %c", &input);
         enableBuffer();
+
+        /* Get input for undo*/
  
         if (input == 'w')
         {
