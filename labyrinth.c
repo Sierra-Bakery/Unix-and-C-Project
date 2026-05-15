@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
 {
     /* Diagnostics */
     int printDiagnostics = 0; /* Set it to 1 enable diagnostics, 0 to disable. */
-    int result;
+    int result = 0;
     int continueGame = 1; /* Set it to 0 to end the game, 1 to continue. */
     /* Map dimensions */
     int sizeR;
@@ -59,25 +59,31 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     int enemyAggro = 0; /* 0 for passive, 1 for aggressive */
     int enemyDirection = 0; /* 0 for up, 1 for down, 2 for left, 3 for right */
     int playerHasTreasure = 0; /* 0 for no treasure, 1 for has treasure */
-    int tileBelow = 0;    /* Value of the tile the enemy is standing on */
+    int tileBelow = 0; /* Value of the tile the enemy is standing on */
+    int blockedMovement = 0; /* 0 for no blocked movement, 1 for blocked movement */
     /* User input */
     char input;
-
-    void initRandom(void); /* Initialize the random number generator */
+    /* History structure */
+    struct History history;
+    /* Map load result */
+    int ok;
 
     if (argc != 2) /* Check if the correct number of command line arguments is provided */
     {
-        fprintf(stderr, "Usage: %s <map_file>\n", argv[0]); /* Print usage message if command line arguments are not correct */
+        fprintf(stderr, "Usage: %s <map_file>\n", argv[0]);
         result = 1;
     }
-    else /* Starts the game */
+    else
     {
-        int ok = handle_file(argv[1], &sizeR, &sizeC, &map); /* Process the map and store the data. Returns 1 if it worked*/
+        initRandom();
+
+        ok = handle_file(argv[1], &sizeR, &sizeC, &map);
         find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
-        struct History history;
+
         history_init(&history);
-        /* Save the initial state to the history */
-        history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
+        history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC,
+                        treasureR, treasureC, enemyR, enemyC,
+                        enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
 
         if (printDiagnostics)
         {
@@ -88,11 +94,13 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
             printf("Enemy Aggro: %d\n", enemyAggro);
             printf("Player Has Treasure: %d\n", playerHasTreasure);
         }
- 
+
         while (ok && continueGame)
         {
             display_map(sizeR, sizeC, map, enemyAggro, enemyDirection);
+            blockedMovement = 0;
             get_input(&input);
+
             if (input == 'u')
             {
                 history_undo(&history, &sizeR, &sizeC, &map,
@@ -102,20 +110,25 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
                                 &enemyR, &enemyC,
                                 &enemyAggro, &enemyDirection,
                                 &playerHasTreasure, &tileBelow);
-}
-            else if (input == 'w' || input == 'a' || input == 's' || input == 'd') /* If the user wants to move: process the game tick and save the new state to the history */
+            }
+            else if (input == 'w' || input == 'a' || input == 's' || input == 'd')
             {
                 gameTick(map, sizeR, sizeC, &playerR, &playerC,
-                        goalR, goalC, treasureR, treasureC,
-                        &enemyR, &enemyC, &enemyAggro, &playerHasTreasure,
-                        &continueGame, &enemyDirection, &tileBelow, &input);
-                history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
+                            goalR, goalC, treasureR, treasureC,
+                            &enemyR, &enemyC, &enemyAggro, &playerHasTreasure,
+                            &continueGame, &enemyDirection, &tileBelow, &input, &blockedMovement);
+                if (!blockedMovement)
+                {
+                    history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC,
+                                    treasureR, treasureC, enemyR, enemyC,
+                                    enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
+                }
             }
         }
 
-    printf("Game Over!\n");
-    free_map(sizeR, map);
-    history_free(&history); /* Free the history */
+        printf("Game Over!\n");
+        free_map(sizeR, map);
+        history_free(&history);
     }
 
     return result;

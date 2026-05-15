@@ -80,12 +80,11 @@ static void move_enemy(int **map, int rows, int cols,
 }
  
 static void move_player(int **map, int rows, int cols,
-                        int *playerR, int *playerC, char input)
+                        int *playerR, int *playerC, char input, int *blockedMovement, int playerHasTreasure)
 {
     int newR;
     int newC;
     int blocked;
-    int inputValid = 0; /* 0 for invalid input, 1 for valid input */
     
     newR = *playerR;
     newC = *playerC;
@@ -115,6 +114,10 @@ static void move_player(int **map, int rows, int cols,
     if (newR >= 0 && newR < rows && newC >= 0 && newC < cols)
     {
         blocked = (map[newR][newC] == 1);
+        if (playerHasTreasure == 0 && map[newR][newC] == 2)
+        {
+            blocked = 1; /* Can't move onto the goal without the treasure */
+        }
  
         if (!blocked)
         {
@@ -122,7 +125,10 @@ static void move_player(int **map, int rows, int cols,
             map[newR][newC]         = 4;
             *playerR = newR;
             *playerC = newC;
-            inputValid = 1;
+        }
+        else
+        {
+            *blockedMovement = 1;
         }
     }
     return;
@@ -151,7 +157,7 @@ static void check_goal(int playerR, int playerC, int goalR, int goalC, int playe
 {
     if (playerR == goalR && playerC == goalC && playerHasTreasure)
     {
-        printf("You escaped with the treasure! You win!\n");
+        printf("You win!\n");
         *continueGame = 0;
     }
 }
@@ -160,15 +166,23 @@ static void check_goal(int playerR, int playerC, int goalR, int goalC, int playe
 int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
              int goalR, int goalC, int treasureR, int treasureC,
              int *enemyR, int *enemyC, int *enemyAggro, int *playerHasTreasure,
-             int *continueGame, int *enemyDirection, int *tileBelow, char *input)
+             int *continueGame, int *enemyDirection, int *tileBelow, char *input, int *blockedMovement)
 {
     int i;
 
-    move_player(map, rows, cols, playerR, playerC, input);
+    move_player(map, rows, cols, playerR, playerC, *input, blockedMovement, *playerHasTreasure);
+    if (*blockedMovement)
+    {
+        return 1;
+    }
     check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
     check_treasure(*playerR, *playerC, treasureR, treasureC, playerHasTreasure, enemyAggro);
     check_goal(*playerR, *playerC, goalR, goalC, *playerHasTreasure, continueGame);
- 
+    if (*continueGame == 0)
+    {
+        return 1;
+    }
+
     if (*enemyAggro)
     {
         for (i = 0; i < 3; i++) /* Move the enemy 3 times */
