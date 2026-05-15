@@ -5,11 +5,40 @@
 #include "game.h"
 #include "random.h"
 #include "history.h"
+#include <termios.h>
 
 /* Welcome to the game! */
 /* This is the main file for the game. It processes the map file, finds entity positions, and displays the map. */
 /* It also contains the main game loop */
 /* Made by Dylan Baker over May 2026 For my assignment on COMP1000 - Unix and C Programming */
+
+/* NOTE: This file contains functions from Curtin University's Assignment supplementary materials */
+/* Credit - Curtin University Assignment supplementary materials: How to Make a Program Accept a Char Immediately.zip */
+static void disableBuffer(void)
+{
+    struct termios mode;
+
+    tcgetattr(0, &mode);
+    mode.c_lflag &= ~(ECHO | ICANON);
+    tcsetattr(0, TCSANOW, &mode);
+}
+
+static void enableBuffer(void)
+{
+    struct termios mode;
+
+    tcgetattr(0, &mode);
+    mode.c_lflag |= (ECHO | ICANON);
+    tcsetattr(0, TCSANOW, &mode);
+}
+/* End of code from Curtin University's Assignment supplementary materials: How to Make a Program Accept a Char Immediately.zip */
+
+static void get_input(char *input)
+{
+    disableBuffer();
+    scanf(" %c", input);
+    enableBuffer();
+}
 
 int main(int argc, char *argv[]) /* Takes command line arguments to processes the map file */
 {
@@ -31,9 +60,10 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     int enemyDirection = 0; /* 0 for up, 1 for down, 2 for left, 3 for right */
     int playerHasTreasure = 0; /* 0 for no treasure, 1 for has treasure */
     int tileBelow = 0;    /* Value of the tile the enemy is standing on */
+    /* User input */
+    char input;
 
     void initRandom(void); /* Initialize the random number generator */
-    struct History *history; /* The history of the game */
 
     if (argc != 2) /* Check if the correct number of command line arguments is provided */
     {
@@ -44,9 +74,10 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
     {
         int ok = handle_file(argv[1], &sizeR, &sizeC, &map); /* Process the map and store the data. Returns 1 if it worked*/
         find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
-        history_init(history); /* Initialize the history */
+        struct History history;
+        history_init(&history);
         /* Save the initial state to the history */
-        history_push(history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
+        history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
 
         if (printDiagnostics)
         {
@@ -61,16 +92,30 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
         while (ok && continueGame)
         {
             display_map(sizeR, sizeC, map, enemyAggro, enemyDirection);
-            gameTick(map, sizeR, sizeC, &playerR, &playerC,
-                    goalR, goalC, treasureR, treasureC,
-                    &enemyR, &enemyC, &enemyAggro, &playerHasTreasure,
-                    &continueGame, &enemyDirection, &tileBelow);
-            history_push(history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
+            get_input(&input);
+            if (input == 'u')
+            {
+                history_undo(&history, &sizeR, &sizeC, &map,
+                                &playerR, &playerC,
+                                &goalR, &goalC,
+                                &treasureR, &treasureC,
+                                &enemyR, &enemyC,
+                                &enemyAggro, &enemyDirection,
+                                &playerHasTreasure, &tileBelow);
+}
+            else if (input == 'w' || input == 'a' || input == 's' || input == 'd') /* If the user wants to move: process the game tick and save the new state to the history */
+            {
+                gameTick(map, sizeR, sizeC, &playerR, &playerC,
+                        goalR, goalC, treasureR, treasureC,
+                        &enemyR, &enemyC, &enemyAggro, &playerHasTreasure,
+                        &continueGame, &enemyDirection, &tileBelow, &input);
+                history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC, treasureR, treasureC, enemyR, enemyC, enemyAggro, enemyDirection, playerHasTreasure, tileBelow);
+            }
         }
 
     printf("Game Over!\n");
     free_map(sizeR, map);
-    history_free(history); /* Free the history */
+    history_free(&history); /* Free the history */
     }
 
     return result;

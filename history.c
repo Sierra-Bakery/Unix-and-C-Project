@@ -3,37 +3,37 @@
 #include <string.h>
 #include "history.h"
 
-/* Makes a full copy of the map and stores it in memory */
+/* Makes a full copy of the map and stores it in memory (source is map, changed for easier readibility) */
 /* Returns the copy, or Null if memory allocation failed */
-static int **copy_map(int sizeR, int sizeC, int **src)
+static int **copy_map(int sizeR, int sizeC, int **source)
 {
-    int **dst;
+    int **destination;
     int r;
 
-    dst = (int **)malloc(sizeR * sizeof(int *)); /* Allocate memory for the row pointers */
-    if (dst == NULL)
+    destination = (int **)malloc(sizeR * sizeof(int *)); /* Allocate memory for the row pointers */
+    if (destination == NULL)
     {
         return NULL;
     }
 
     for (r = 0; r < sizeR; r++)
     {
-        dst[r] = (int *)malloc(sizeC * sizeof(int)); /* Allocate memory for each row */
-        if (dst[r] == NULL)
+        destination[r] = (int *)malloc(sizeC * sizeof(int)); /* Allocate memory for each row */
+        if (destination[r] == NULL)
         {
             /* Free any rows already allocated before it */
             while (r > 0)
             {
                 r = r - 1;
-                free(dst[r]);
+                free(destination[r]);
             }
-            free(dst);
+            free(destination);
             return NULL;
         }
-        memcpy(dst[r], src[r], sizeC * sizeof(int)); /* Copy the row data from src to dst */
+        memcpy(destination[r], source[r], sizeC * sizeof(int)); /* Copy the row data from source to destination */
     }
 
-    return dst;
+    return destination;
 }
 
 /* Frees the map that was made with copy_map */
