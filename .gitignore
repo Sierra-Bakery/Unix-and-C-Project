@@ -1,8 +1,6 @@
 ProjectDetails/
 vokrat
 labyrinth
-!templateLarge.map
-!template.map
 
 ### C ###
 # Prerequisites
@@ -57,3 +55,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+!templateLarge.map
+!template.map
