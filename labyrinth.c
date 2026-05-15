@@ -5,6 +5,7 @@
 #include "game.h"
 #include "random.h"
 #include "history.h"
+#include "graphics.h"
 #include <termios.h>
 
 /* Welcome to the game! */
@@ -79,6 +80,8 @@ int main(int argc, char *argv[]) /* Takes command line arguments to processes th
 
         ok = handle_file(argv[1], &sizeR, &sizeC, &map);
         find_entities(sizeR, sizeC, map, &playerR, &playerC, &goalR, &goalC, &treasureR, &treasureC, &enemyR, &enemyC);
+
+        play_intro();
 
         history_init(&history);
         history_push(&history, sizeR, sizeC, map, playerR, playerC, goalR, goalC,
