@@ -1,6 +1,8 @@
 ProjectDetails/
 vokrat
 labyrinth
+!templateLarge.map
+!template.map
 
 ### C ###
 # Prerequisites
