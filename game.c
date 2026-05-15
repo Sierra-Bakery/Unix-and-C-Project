@@ -190,6 +190,10 @@ int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
             newSleep(0.1);
             move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection, tileBelow);
             check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
+            if (*continueGame == 0)
+            {
+                return 1;
+            }
             display_map(rows, cols, map, *enemyAggro, *enemyDirection);
         }
     }
@@ -200,6 +204,10 @@ int gameTick(int **map, int rows, int cols, int *playerR, int *playerC,
             newSleep(0.1);
             move_enemy(map, rows, cols, enemyR, enemyC, enemyDirection, tileBelow);
             check_caught(*playerR, *playerC, *enemyR, *enemyC, continueGame);
+            if (*continueGame == 0)
+            {
+                return 1;
+            }
             display_map(rows, cols, map, *enemyAggro, *enemyDirection);
         }
     }
